@@ -1,0 +1,12 @@
+# CSV files
+*.csv
+
+# Video files
+*.mp4
+
+# MediaPipe files
+*.pkl
+
+# Other files
+*.log
+
