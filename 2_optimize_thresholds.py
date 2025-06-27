@@ -159,37 +159,26 @@ study_pose = optuna.create_study(direction="maximize")
 study_pose.optimize(objective_pose, n_trials=300)
 final_params.update(study_pose.best_params)
 
-# --- Silo 6: Emotion System ---
-def objective_emotion(trial):
-    # With the curl metric, happy ~ small negative, sad ~ positive.
-    happy_thresh = trial.suggest_float("mouth_curl_happy_thresh", -0.15, -0.001)
-    sad_thresh   = trial.suggest_float("mouth_curl_sad_thresh", 0.001, 0.15)
+# --- Silo 6: Smile (Happy) System ---
+def objective_smile(trial):
+    # Detect only smiles; anything else = non-smile.
+    smile_thresh = trial.suggest_float("smile_thresh", -0.15, -0.001)
 
-    # Require a minimal safety gap between thresholds
-    if happy_thresh >= -0.0005 or sad_thresh <= 0.0005 or (sad_thresh + happy_thresh) > 0:
-        # overlap or invalid sign relationship – discard
+    pred = df['mouth_curl_metric'] < smile_thresh
+
+    mask = df['scenario_ground_truth'].isin(["Emotion Happy", "Emotion Sad", "Emotion Surprise"]) & df['mouth_curl_metric'].notna()
+    if mask.sum() == 0:
         return 0.0
 
-    happy_pred = df['mouth_curl_metric'] < happy_thresh  # more negative = happier
-    sad_pred   = df['mouth_curl_metric'] > sad_thresh    # more positive = sadder
-    surprise_thresh = trial.suggest_float("emotion_surprise_thresh", 0.4, 1.5)
-    surprise_pred = df['emotion_surprise_metric'] > surprise_thresh
+    y_true = (df.loc[mask, 'scenario_ground_truth'] == "Emotion Happy").astype(int)
+    y_pred = pred[mask].astype(int)
 
-    # Calculate recall for each emotion and optimise for the worst-case (so that all emotions
-    # need to achieve a high recall, preventing the optimiser from ignoring one class).
-    recalls = []
-    for state, pred, metric in [("Emotion Happy", happy_pred, 'mouth_curl_metric'),
-                                ("Emotion Sad", sad_pred, 'mouth_curl_metric'),
-                                ("Emotion Surprise", surprise_pred, 'emotion_surprise_metric')]:
-        mask = (df['scenario_ground_truth'] == state) & df[metric].notna()
-        if mask.sum() > 0:
-            recalls.append(accuracy_score(np.ones(mask.sum()), pred[mask].astype(int)))
-    return float(min(recalls)) if recalls else 0.0
+    return accuracy_score(y_true, y_pred)
 
-print("\n--- Optimizing Emotion System ---")
-study_emotion = optuna.create_study(direction="maximize")
-study_emotion.optimize(objective_emotion, n_trials=300)
-final_params.update(study_emotion.best_params)
+print("\n--- Optimizing Smile Detection ---")
+study_smile = optuna.create_study(direction="maximize")
+study_smile.optimize(objective_smile, n_trials=300)
+final_params.update(study_smile.best_params)
 
 
 # ==============================================================================
@@ -207,9 +196,9 @@ for k, v in sorted(final_params.items()):
 print("\n--- Final Accuracy Breakdown by State (using best thresholds) ---")
 # Re-run all predictions using the final combined set of optimal parameters
 params = final_params
-happy_pred = df['mouth_curl_metric'] < params['mouth_curl_happy_thresh']
-sad_pred   = df['mouth_curl_metric'] > params['mouth_curl_sad_thresh']
-surprise_pred = df['emotion_surprise_metric'] > params['emotion_surprise_thresh']
+smile_pred = df['mouth_curl_metric'] < params['smile_thresh']
+sad_pred = None  # deprecated
+surprise_pred = None
 pose_forward_pred = df['pose_forward_metric'] < params['pose_forward_thresh']
 hand_raised_pred = df['hand_raise_metric'] > params['hand_raise_thresh']
 drowsy_pred = df['ear'].rolling(window=params['drowsy_frames'], min_periods=1).mean() < params['ear_thresh']
@@ -222,23 +211,26 @@ pose_right_pred = df['pose_horiz_centered'] > params['pose_h_right_thresh']
 
 # Final evaluation maps
 preds = {
-    "Emotion Happy": happy_pred, "Emotion Sad": sad_pred, "Emotion Surprise": surprise_pred,
+    "Smile": smile_pred,
     "Drowsy": drowsy_pred, "Yawning": yawn_pred, "Gaze Left": gaze_left_pred,
     "Gaze Right": gaze_right_pred, "Gaze Center": gaze_center_pred, "Looking Left": pose_left_pred,
     "Looking Right": pose_right_pred, "Hand Raise": hand_raised_pred, "Forward Pose": pose_forward_pred,
 }
 validity = {
-    "Emotion Happy": df['mouth_curl_metric'].notna(), "Emotion Sad": df['mouth_curl_metric'].notna(),
-    "Emotion Surprise": df['emotion_surprise_metric'].notna(), "Drowsy": df['ear'].notna(), "Yawning": df['mar'].notna(),
+    "Smile": df['mouth_curl_metric'].notna(), "Drowsy": df['ear'].notna(), "Yawning": df['mar'].notna(),
     "Gaze Left": df['gaze_avg_ratio'].notna(), "Gaze Right": df['gaze_avg_ratio'].notna(), "Gaze Center": df['gaze_avg_ratio'].notna(),
     "Looking Left": df['pose_horiz_centered'].notna(), "Looking Right": df['pose_horiz_centered'].notna(),
     "Hand Raise": df['hand_raise_metric'].notna(), "Forward Pose": df['pose_forward_metric'].notna(),
 }
 
 # Loop and calculate final accuracies
+alias = {"Smile": "Emotion Happy"}
+
 for s, p in sorted(preds.items()):
-    if s not in validity: continue
-    mask = (df['scenario_ground_truth'] == s) & validity[s]
+    if s not in validity:
+        continue
+    gt_label = alias.get(s, s)
+    mask = (df['scenario_ground_truth'] == gt_label) & validity[s]
     if mask.sum() > 0:
         y_true = np.ones(mask.sum())
         y_pred = p[mask].astype(int)
