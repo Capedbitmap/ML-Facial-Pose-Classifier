@@ -1,0 +1,15 @@
+{
+    "ear_thresh": 0.35783430512130965,
+    "drowsy_frames": 52,
+    "mar_thresh": 0.4000916047427685,
+    "yawn_frames": 5,
+    "hand_raise_thresh": 0.24903035825293462,
+    "gaze_left_thresh": 0.4454970022225572,
+    "gaze_right_thresh": 0.5725013209288092,
+    "pose_h_left_thresh": -0.2845244704814931,
+    "pose_h_right_thresh": 0.18623897596972333,
+    "pose_forward_thresh": 0.17407323563917337,
+    "pose_v_up_thresh": 0.44922484695509896,
+    "pose_v_down_thresh": 0.5500683641041973,
+    "smile_thresh": -0.001033317101326486
+}
