@@ -21,7 +21,7 @@ def mouth_aspect_ratio(top, bottom, left, right):
     return vertical / horizontal if horizontal != 0 else 0.0
 
 # --- Define Project Paths ---
-VIDEO_SOURCE_DIR = "."
+VIDEO_SOURCE_DIR = "videos"
 # We will READ from your original processed data
 SOURCE_DATA_DIR = "processed_data"
 # We will WRITE the new files to a separate, new directory
