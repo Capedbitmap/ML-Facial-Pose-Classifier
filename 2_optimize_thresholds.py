@@ -4,6 +4,7 @@ import glob
 import os
 import optuna
 from sklearn.metrics import accuracy_score
+import json
 
 # --- Path to your final, enriched data directory ---
 PROCESSED_DATA_DIR = "enriched_processed_data" 
@@ -159,6 +160,28 @@ study_pose = optuna.create_study(direction="maximize")
 study_pose.optimize(objective_pose, n_trials=300)
 final_params.update(study_pose.best_params)
 
+# --- NEW Silo: Vertical Head Pose System (Looking Up / Down) ---
+
+def objective_pose_vert(trial):
+    # Pose vertical ratio: 0 (top) .. 1 (bottom) roughly
+    pose_v_up_thresh = trial.suggest_float("pose_v_up_thresh", 0.1, 0.45)
+    pose_v_down_thresh = trial.suggest_float("pose_v_down_thresh", 0.55, 0.9)
+
+    pose_up_pred = df['pose_vert_ratio'] < pose_v_up_thresh
+    pose_down_pred = df['pose_vert_ratio'] > pose_v_down_thresh
+
+    y_true, y_pred = [], []
+    for state, pred in [("Looking Up", pose_up_pred), ("Looking Down", pose_down_pred)]:
+        mask = (df['scenario_ground_truth'] == state) & df['pose_vert_ratio'].notna()
+        if mask.sum() > 0:
+            y_true.extend(np.ones(mask.sum())); y_pred.extend(pred[mask].astype(int))
+    return accuracy_score(y_true, y_pred) if y_true else 0.0
+
+print("\n--- Optimizing Vertical Head Pose System ---")
+study_pose_vert = optuna.create_study(direction="maximize")
+study_pose_vert.optimize(objective_pose_vert, n_trials=300)
+final_params.update(study_pose_vert.best_params)
+
 # --- Silo 6: Smile (Happy) System ---
 def objective_smile(trial):
     # Detect only smiles; anything else = non-smile.
@@ -193,6 +216,11 @@ print("\n--- Final Optimized Thresholds from Each Independent System ---")
 for k, v in sorted(final_params.items()):
     print(f"  {k:<25}: {v:.4f}" if isinstance(v, float) else f"  {k:<25}: {v}")
 
+# NEW: Save thresholds to JSON for downstream scripts
+with open("optimized_thresholds.json", "w") as fp:
+    json.dump(final_params, fp, indent=4)
+    print("\nThresholds saved to 'optimized_thresholds.json'.")
+
 print("\n--- Final Accuracy Breakdown by State (using best thresholds) ---")
 # Re-run all predictions using the final combined set of optimal parameters
 params = final_params
@@ -208,18 +236,22 @@ gaze_right_pred = df['gaze_avg_ratio'] > params['gaze_right_thresh']
 gaze_center_pred = (df['gaze_avg_ratio'] >= params['gaze_left_thresh']) & (df['gaze_avg_ratio'] <= params['gaze_right_thresh'])
 pose_left_pred = df['pose_horiz_centered'] < params['pose_h_left_thresh']
 pose_right_pred = df['pose_horiz_centered'] > params['pose_h_right_thresh']
+pose_up_pred = df['pose_vert_ratio'] < params['pose_v_up_thresh']
+pose_down_pred = df['pose_vert_ratio'] > params['pose_v_down_thresh']
 
 # Final evaluation maps
 preds = {
     "Smile": smile_pred,
     "Drowsy": drowsy_pred, "Yawning": yawn_pred, "Gaze Left": gaze_left_pred,
     "Gaze Right": gaze_right_pred, "Gaze Center": gaze_center_pred, "Looking Left": pose_left_pred,
-    "Looking Right": pose_right_pred, "Hand Raise": hand_raised_pred, "Forward Pose": pose_forward_pred,
+    "Looking Right": pose_right_pred, "Looking Up": pose_up_pred, "Looking Down": pose_down_pred,
+    "Hand Raise": hand_raised_pred, "Forward Pose": pose_forward_pred,
 }
 validity = {
     "Smile": df['mouth_curl_metric'].notna(), "Drowsy": df['ear'].notna(), "Yawning": df['mar'].notna(),
     "Gaze Left": df['gaze_avg_ratio'].notna(), "Gaze Right": df['gaze_avg_ratio'].notna(), "Gaze Center": df['gaze_avg_ratio'].notna(),
     "Looking Left": df['pose_horiz_centered'].notna(), "Looking Right": df['pose_horiz_centered'].notna(),
+    "Looking Up": df['pose_vert_ratio'].notna(), "Looking Down": df['pose_vert_ratio'].notna(),
     "Hand Raise": df['hand_raise_metric'].notna(), "Forward Pose": df['pose_forward_metric'].notna(),
 }
 
