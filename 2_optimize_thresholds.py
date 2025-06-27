@@ -161,12 +161,13 @@ final_params.update(study_pose.best_params)
 
 # --- Silo 6: Emotion System ---
 def objective_emotion(trial):
-    # With the new curl metric, smiles (happy) are negative, frowns (sad) positive.
-    happy_thresh = trial.suggest_float("mouth_curl_happy_thresh", -0.25, -0.02)
-    sad_thresh   = trial.suggest_float("mouth_curl_sad_thresh", 0.02, 0.25)
+    # With the curl metric, happy ~ small negative, sad ~ positive.
+    happy_thresh = trial.suggest_float("mouth_curl_happy_thresh", -0.15, -0.001)
+    sad_thresh   = trial.suggest_float("mouth_curl_sad_thresh", 0.001, 0.15)
 
-    # If thresholds overlap around zero, skip
-    if happy_thresh >= 0 or sad_thresh <= 0:
+    # Require a minimal safety gap between thresholds
+    if happy_thresh >= -0.0005 or sad_thresh <= 0.0005 or (sad_thresh + happy_thresh) > 0:
+        # overlap or invalid sign relationship – discard
         return 0.0
 
     happy_pred = df['mouth_curl_metric'] < happy_thresh  # more negative = happier
