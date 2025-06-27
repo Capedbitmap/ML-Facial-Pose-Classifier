@@ -9,8 +9,8 @@ from sklearn.metrics import accuracy_score
 PROCESSED_DATA_DIR = "enriched_processed_data" 
 
 # --- Configuration for the dat cleaning process ---
-TRIM_PERCENTAGE = 0.15  # Remove first and last 15% of frames for each state segment
-IQR_MULTIPLIER = 1.5   # Standard value for outlier detection.
+TRIM_PERCENTAGE = 0.1  # Remove first and last 15% of frames for each state segment
+IQR_MULTIPLIER = 3   # Standard value for outlier detection.
 
 # --- Data Cleaning Function ---
 def clean_data(df, all_csv_files):
