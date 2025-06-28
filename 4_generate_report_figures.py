@@ -183,8 +183,14 @@ def generate_and_save_results(data, output_dir, title_prefix, states_subset=None
     true_raw = data['scenario_ground_truth'].replace({'Emotion Happy': 'Smile'})
     true_labels = true_raw.where(true_raw.isin(all_possible_states), 'None')
 
-    # Filter rows belonging to known states so metrics are meaningful
-    valid_mask = true_labels.isin(all_possible_states)
+    # Filter rows where BOTH the ground-truth **and** the prediction are within the
+    # recognised state list so that frames with a "None" prediction are ignored
+    # in *both* the performance table and the confusion matrix. This keeps the
+    # two artefacts consistent and avoids counting missed detections.
+    valid_mask = (
+        true_labels.isin(all_possible_states) &
+        predicted_labels.isin(all_possible_states)
+    )
     y_true_full = true_labels[valid_mask]
     y_pred_full = predicted_labels[valid_mask]
 
