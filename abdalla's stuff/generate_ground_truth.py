@@ -59,7 +59,7 @@ def process_video_file(csv_path, class_mapping, num_classes):
             
             # Create CSV row
             ground_truth_data.append({
-                'frame': f"{frame_num:05d}",
+                'frame': f"{frame_num:04d}",
                 'classes': f"[{binary_string}]"
             })
         
