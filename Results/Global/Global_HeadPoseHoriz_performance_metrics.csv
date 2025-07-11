@@ -1,0 +1,7 @@
+,precision,recall,f1-score,support
+Forward Pose,0.984,1.000,0.992,2602.000
+Looking Left,1.000,0.999,1.000,1671.000
+Looking Right,1.000,0.969,0.984,1372.000
+accuracy,0.992,0.992,0.992,0.992
+macro avg,0.995,0.990,0.992,5645.000
+weighted avg,0.993,0.992,0.992,5645.000

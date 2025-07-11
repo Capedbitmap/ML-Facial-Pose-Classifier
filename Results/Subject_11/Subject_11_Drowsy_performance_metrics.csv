@@ -1,0 +1,5 @@
+,precision,recall,f1-score,support
+Drowsy,1.000,1.000,1.000,117.000
+accuracy,1.000,1.000,1.000,1.000
+macro avg,1.000,1.000,1.000,117.000
+weighted avg,1.000,1.000,1.000,117.000

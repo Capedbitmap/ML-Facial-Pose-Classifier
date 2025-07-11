@@ -1,0 +1,5 @@
+,precision,recall,f1-score,support
+Smile,1.000,0.125,0.222,8.000
+micro avg,1.000,0.125,0.222,8.000
+macro avg,1.000,0.125,0.222,8.000
+weighted avg,1.000,0.125,0.222,8.000

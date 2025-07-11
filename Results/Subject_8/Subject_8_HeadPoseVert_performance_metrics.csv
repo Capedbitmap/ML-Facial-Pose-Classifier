@@ -1,0 +1,6 @@
+,precision,recall,f1-score,support
+Looking Up,0.000,0.000,0.000,0.000
+Looking Down,1.000,0.966,0.983,149.000
+accuracy,0.966,0.966,0.966,0.966
+macro avg,0.500,0.483,0.491,149.000
+weighted avg,1.000,0.966,0.983,149.000

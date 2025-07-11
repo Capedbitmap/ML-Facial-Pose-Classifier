@@ -1,0 +1,7 @@
+,precision,recall,f1-score,support
+Gaze Left,0.990,0.818,0.896,121.000
+Gaze Right,1.000,0.991,0.996,117.000
+Gaze Center,0.826,0.991,0.901,110.000
+accuracy,0.931,0.931,0.931,0.931
+macro avg,0.939,0.934,0.931,348.000
+weighted avg,0.941,0.931,0.931,348.000

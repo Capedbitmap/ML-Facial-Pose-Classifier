@@ -1,5 +1,5 @@
 # CSV files
-*.csv
+
 
 # Video files
 *.mp4
@@ -11,13 +11,13 @@
 *.log
 
 # Results
-Results/
+
 
 # Enrichment
-enriched_processed_data/
+
 
 # Processed data
-processed_data/
+
 processed_data.zip
 
 
@@ -26,3 +26,4 @@ venv/
 
 # macOS
 .DS_Store
+CLAUDE.md

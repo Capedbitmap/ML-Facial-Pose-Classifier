@@ -1,0 +1,24 @@
+video,Drowsy,Yawning,Hand Raise,Smile,Looking Left,Looking Right,Forward Pose,Looking Up,Looking Down,Gaze Left,Gaze Right,Gaze Center
+10_data_enriched.csv,1,0.967,1,1,,,1,0.993,0.98,1,1,1
+11_data_enriched.csv,1,0.383,1,1,1,1,1,0.913,0.853,1,1,1
+12_data_enriched.csv,1,0.967,1,0.111,1,1,1,,1,1,1,1
+13_data_enriched.csv,1,0.967,1,0.983,,,1,,1,1,1,1
+14_data_enriched.csv,1,0.937,1,1,1,1,1,,1,1,1,1
+15_data_enriched.csv,1,0.967,1,,1,1,1,,1,1,1,1
+16_data_enriched.csv,1,0.888,1,0.973,,,1,,0.893,1,1,1
+17_data_enriched.csv,0.571,0.967,1,0.81,1,1,1,1,0.973,1,1,1
+18_data_enriched.csv,1,0.967,1,1,1,1,1,0.993,0.122,1,1,1
+19_data_enriched.csv,1,0.933,1,,1,1,1,,0.993,1,0.973,1
+1_data_enriched.csv,1,0.967,1,0.966,1,1,1,0.967,0.087,1,1,1
+20_data_enriched.csv,1,0.967,1,1,1,1,1,0.96,0.993,0.818,0.991,0.991
+2_data_enriched.csv,1,0.967,1,0.8,1,1,1,0.875,0.98,1,1,1
+3_data_enriched.csv,1,0.565,1,0.475,1,1,1,0.987,0.987,1,1,1
+4_data_enriched.csv,1,0.963,,,1,,1,0.906,0.93,1,1,1
+5_data_enriched.csv,1,0.938,1,0.96,1,1,1,0.92,0.973,1,1,1
+6_data_enriched.csv,0.575,,1,1,1,,1,0.987,0.986,1,1,1
+7_data_enriched.csv,1,0.967,1,1,1,1,1,0.967,0.967,1,1,1
+8_data_enriched.csv,1,,1,1,,1,1,,0.96,1,1,1
+9_data_enriched.csv,1,0.967,1,,1,1,1,0.973,0.733,1,1,0.992
+,,,,,,,,,,,,
+Average,0.9573,0.902444444,1,0.879875,1,1,1,0.957,0.8705,0.9909,0.9982,0.99915
+Total Average,0.962947454,,,,,,,,,,,
