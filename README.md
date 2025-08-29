@@ -1,4 +1,4 @@
-# 20-Person Engagement Test
+# ML Facial Pose Classifier
 
 A comprehensive computer vision pipeline for analyzing human engagement and behavioral patterns from video data using MediaPipe and machine learning techniques.
 
