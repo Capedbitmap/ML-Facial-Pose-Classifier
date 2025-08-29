@@ -112,8 +112,6 @@ The system can detect and classify:
    pip install pandas numpy opencv-python mediapipe scipy scikit-learn matplotlib seaborn optuna
    ```
 
-   **⚠️ Critical Warning**: Always activate the virtual environment before installing packages. Never install globally as it will break the project environment.
-
 ## Usage
 
 ### Quick Start
