@@ -330,20 +330,3 @@ Key detection thresholds (auto-optimized):
     "smile_thresh": -0.001      // Smile detection sensitivity
 }
 ```
-
-### Customization Options
-
-#### Video Processing
-- Modify `SCENARIO_DURATION_SECONDS` in `1_process_videos.py`
-- Adjust MediaPipe detection confidence in model initialization
-- Change landmark indices for different facial features
-
-#### Optimization
-- Tune `TRIM_PERCENTAGE` for data cleaning aggressiveness
-- Modify `IQR_MULTIPLIER` for outlier sensitivity
-- Adjust Optuna trial count for optimization depth
-
-#### Analysis
-- Configure visualization styles in `4_generate_report_figures.py`
-- Modify result directory structure
-- Customize performance metric calculations
